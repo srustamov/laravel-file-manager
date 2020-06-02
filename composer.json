@@ -21,12 +21,19 @@
         "illuminate/routing": "^6.0|^7.0",
         "illuminate/view": "^6.0|^7.0"
     },
+    "require-dev": {
+       "orchestra/testbench": "^4.0|^5.0",
+       "phpunit/phpunit": "^8.0|^8.5"
+    },
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Srustamov\\FileManager\\": "src/",
             "Srustamov\\FileManager\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+       "test": "vendor/bin/phpunit"
     },
     "extra": {
         "laravel": {

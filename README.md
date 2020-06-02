@@ -1,6 +1,11 @@
 # Laravel File Manager
 
 
+[![Build Status](https://travis-ci.org/srustamov/laravel-file-manager.svg?branch=master)](https://travis-ci.org/srustamov/laravel-file-manager)
+
+[![Latest Stable Version](https://poser.pugx.org/srustamov/laravel-file-manager/v/stable)](https://packagist.org/packages/srustamov/laravel-file-manager)
+[![Latest Unstable Version](https://poser.pugx.org/srustamov/laravel-file-manager/v/unstable)](https://packagist.org/packages/srustamov/laravel-file-manager)
+[![GitHub license](https://img.shields.io/github/license/srustamov/laravel-file-manager.svg)](https://github.com/srustamov/laravel-file-manager/blob/master/LICENSE.md)
 
 ## Requirements
 
