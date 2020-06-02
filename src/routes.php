@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::namespace(config('file-manager.route.namespace','Srustamov\\FileManager\\Controllers'))
   ->prefix(config('file-manager.route.prefix',''))
 	->domain(config('file-manager.route.domain',''))
-	->middleware(config('file-manager.middleware',[]))
+	->middleware(config('file-manager.route.middleware',[]))
 	->group(function(){
 	      Route::get('/','FileManagerController@index')
               ->name(config('file-manager.route.as',''));
