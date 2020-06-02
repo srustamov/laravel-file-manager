@@ -20,6 +20,7 @@ class TestCase extends Orchestra
 
   protected function setUp(): void
   {
+
       parent::setUp();
 
       config()->set('file-manager.paths.base',__DIR__.'/__test_path__');
@@ -29,5 +30,6 @@ class TestCase extends Orchestra
       $this->config = config('file-manager');
 
   }
+
 
 }
