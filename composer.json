@@ -2,6 +2,7 @@
     "name": "srustamov/laravel-file-manager",
     "description": "Laravel file manager",
     "type": "library",
+    "keywords": ["laravel", "file manager", "vue file manager","file browser"],
     "license": "MIT",
     "authors": [
         {
