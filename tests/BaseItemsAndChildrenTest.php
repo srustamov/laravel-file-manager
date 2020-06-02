@@ -6,8 +6,11 @@ namespace Srustamov\FileManager\Tests;
 class BaseItemsAndChildrenTest extends TestCase
 {
 
+
   public function test_base_items()
   {
+     $this->withoutMiddleware();
+     
      $response = $this->post('/file-manager/files')
                       ->assertStatus(200)
                       ->decodeResponseJson();
@@ -17,6 +20,8 @@ class BaseItemsAndChildrenTest extends TestCase
 
   public function test_children_items()
   {
+     $this->withoutMiddleware();
+
      $path = $this->config['paths']['base'].'/test-folder-1';
 
 
