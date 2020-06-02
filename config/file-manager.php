@@ -17,6 +17,6 @@ return [
         'domain' => '',
         'namespace' => 'Srustamov\\FileManager\\Controllers',
         'as' => 'fileManager',
-        'middleware' => ['web']
+        'middleware' => ['web','auth']
     ],
 ];
