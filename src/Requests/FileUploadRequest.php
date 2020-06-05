@@ -2,7 +2,6 @@
 
 namespace Srustamov\FileManager\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
 class FileUploadRequest extends FormRequest

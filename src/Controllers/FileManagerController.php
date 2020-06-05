@@ -384,12 +384,11 @@ class FileManagerController extends Controller
 
     /**
      * @param UnzipRequest $request
-     * @param FileService $service
      * @return JsonResponse
      */
-    public function unzip(UnzipRequest $request, FileService $service): JsonResponse
+    public function unzip(UnzipRequest $request): JsonResponse
     {
-        $response = $service->unzip(
+        $response = $this->service->unzip(
             $this->service->absolutePath($request->post('path')),
             $this->service->absolutePath($request->post('target'))
         );
