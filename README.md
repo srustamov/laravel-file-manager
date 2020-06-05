@@ -7,6 +7,9 @@
 [![Latest Unstable Version](https://poser.pugx.org/srustamov/laravel-file-manager/v/unstable)](https://packagist.org/packages/srustamov/laravel-file-manager)
 [![GitHub license](https://img.shields.io/github/license/srustamov/laravel-file-manager.svg)](https://github.com/srustamov/laravel-file-manager/blob/master/LICENSE.md)
 
+## Preview
+![Design](https://i.ibb.co/Jc6kxYk/ezgif-com-video-to-gif.gif|width:100)
+
 ## Requirements
 
 - Laravel **^6.0** or **^7.0**
@@ -27,8 +30,7 @@ php artisan vendor:publish --provider="Srustamov\FileManager\FileManagerServiceP
 php artisan vendor:publish --provider="Srustamov\FileManager\FileManagerServiceProvider" --tag="public" --force
 ```
 
-## Preview
-![Design](https://i.ibb.co/Jc6kxYk/ezgif-com-video-to-gif.gif)
+
 
 
 
