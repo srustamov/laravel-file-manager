@@ -2,7 +2,7 @@
 
 namespace Srustamov\FileManager\Requests;
 
-class FileCreateRequest extends BaseRequest
+class FileCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -13,7 +13,7 @@ class Translation
      */
     public static function get($key, array $data = [])
     {
-        return __('fileManager::messages.'.$key,$data);
+        return __('fileManager::messages.' . $key, $data);
     }
 
 
@@ -27,10 +27,10 @@ class Translation
      */
     public static function getIf($if, $if_key, $else_key = null, array $data = [], array $else_data = null)
     {
-        if($if){
-            return self::get($if_key,is_array($else_key) ? $else_key : $data);
+        if ($if) {
+            return self::get($if_key, is_array($else_key) ? $else_key : $data);
         }
 
-        return self::get($else_key,is_array($else_key) ? $else_key : ($else_data ?? $data));
+        return self::get($else_key, is_array($else_key) ? $else_key : ($else_data ?? $data));
     }
 }

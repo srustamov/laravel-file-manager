@@ -3,7 +3,7 @@
 namespace Srustamov\FileManager\Requests;
 
 
-class UnzipRequest extends BaseRequest
+class UnzipRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

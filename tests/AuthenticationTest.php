@@ -13,7 +13,6 @@ class AuthenticationTest extends TestCase
      ]);
 
      $response->assertUnauthorized();
-
   }
 
   public function test_base_path_authorize()

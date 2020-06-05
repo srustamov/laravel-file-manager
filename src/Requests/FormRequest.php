@@ -2,7 +2,8 @@
 
 namespace Srustamov\FileManager\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest as BaseFormRequest;
+use Srustamov\FileManager\Exceptions\FileManagerException;
 use Illuminate\Support\Str;
 
 /**
@@ -14,15 +15,25 @@ use Illuminate\Support\Str;
  * @property string to
  */
 
-abstract class BaseRequest extends FormRequest
+abstract class FormRequest extends BaseFormRequest
 {
 
+    /**
+     * @return bool|string
+     */
     protected function getClientBasePath()
     {
-        return realpath(config('file-manager.paths.base'));
+        if (!$path = realpath(config('file-manager.paths.base',null))) {
+            throw new FileManagerException('File manager base path not found');
+        }
+        return $path;
     }
 
 
+    /**
+     * @param $path
+     * @return bool
+     */
     protected function validatePath($path)
     {
         $realpath = realpath($path) ?: realpath(dirname($path));

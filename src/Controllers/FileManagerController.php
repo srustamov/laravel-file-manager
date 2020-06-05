@@ -8,36 +8,45 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Srustamov\FileManager\Requests\FileCopyRequest;
-use Srustamov\FileManager\Requests\FileCreateRequest;
-use Srustamov\FileManager\Requests\FileDeleteRequest;
-use Srustamov\FileManager\Requests\FileUploadRequest;
-use Srustamov\FileManager\Requests\UnzipRequest;
-use Srustamov\FileManager\Requests\ZipRequest;
+use Srustamov\FileManager\Requests\{
+    FileCopyRequest,
+    FileCreateRequest,
+    FileDeleteRequest,
+    FileUploadRequest,
+    UnzipRequest,
+    ZipRequest,
+};
+
+use Srustamov\FileManager\Contracts\FileServiceInterface;
 use Srustamov\FileManager\Services\FileService;
-use Srustamov\FileManager\Traits\Path;
-use Srustamov\FileManager\Traits\FileTrait;
+
 use Srustamov\FileManager\Translation;
 
 class FileManagerController extends Controller
 {
 
-    use FileTrait, Path;
-
-    private $base_path;
+    private $service;
 
     /**
      * FileManagerController constructor.
+     * @param FileServiceInterface $service
      */
-    public function __construct()
+    public function __construct(FileServiceInterface $service)
     {
-        $this->base_path = realpath(config('file-manager.paths.base', '/'));
+        $this->service = $service;
     }
 
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
-        return view('file-manager::index');
+        return view('file-manager::index',[
+            'path' => $this->service->base_path,
+            'route_prefix' => config('file-manager.route.prefix',''),
+            'ds' => FileService::DS
+        ]);
     }
 
     /**
@@ -46,7 +55,7 @@ class FileManagerController extends Controller
      */
     public function showBaseItems(Request $request): JsonResponse
     {
-        return response()->json($this->getBasePathItems($request->post('open', [])));
+        return response()->json($this->service->getBasePathItems($request->post('open', [])));
     }
 
     /**
@@ -56,7 +65,7 @@ class FileManagerController extends Controller
     public function children(Request $request): JsonResponse
     {
         return response()->json(
-            $this->getChildren($request->post('path'))
+            $this->service->getChildren($request->post('path'))
         );
     }
 
@@ -66,7 +75,7 @@ class FileManagerController extends Controller
      */
     public function getFileContent(Request $request): JsonResponse
     {
-        $path = $this->preparePath($request->post('path'));
+        $path = $this->service->absolutePath($request->post('path'));
 
         if (File::isFile($path)) {
 
@@ -116,7 +125,7 @@ class FileManagerController extends Controller
      */
     public function saveFileContent(Request $request): JsonResponse
     {
-        $path = $this->preparePath($request->post('path'));
+        $path = $this->service->absolutePath($request->post('path'));
 
         $content = $request->post('content');
 
@@ -142,40 +151,40 @@ class FileManagerController extends Controller
      */
     public function createFile(FileCreateRequest $request): ?JsonResponse
     {
-        $parent = rtrim($this->preparePath($request->post('parent')), $this->ds);
+        $parent = rtrim($this->service->absolutePath($request->post('parent')), FileService::DS);
 
-        $filename = trim($request->name, $this->ds);
+        $filename = trim($request->name, FileService::DS);
 
-        $fullpath = $parent . $this->ds . $filename;
+        $full_path = $parent . FileService::DS. $filename;
 
         try {
-            if (File::exists($fullpath)) {
+            if (File::exists($full_path)) {
                 return response()->json([
                     'success' => false,
                     'message' => Translation::get('already_created', ['type' => 'File'])
                 ]);
             }
 
-            if (strpos($filename, $this->ds) !== false) {
-                File::ensureDirectoryExists(File::dirname($fullpath));
+            if (strpos($filename, FileService::DS) !== false) {
+                File::ensureDirectoryExists(File::dirname($full_path));
             }
 
-            $create = File::put($fullpath, '') !== false;
+            $create = File::put($full_path, '') !== false;
 
             if ($create) {
-                File::chmod($fullpath, 0755);
+                File::chmod($full_path, 0755);
             }
 
             return response()->json([
                 'success' => $create,
-                'path' => $fullpath,
+                'path' => $full_path,
                 'message' => Translation::getIf(
                     $create,
                     'created',
                     'not_created',
                     ['type' => 'File']
                 ),
-                'items' => $create ? $this->getBasePathItems($request->post('open', [])) : []
+                'items' => $create ? $this->service->getBasePathItems($request->post('open', [])) : []
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -191,10 +200,10 @@ class FileManagerController extends Controller
      */
     public function createFolder(FileCreateRequest $request): ?JsonResponse
     {
-        $parent = rtrim($this->preparePath($request->post('parent')), $this->ds);
-        $name = trim($request->post('name'), $this->ds);
+        $parent = rtrim($this->service->absolutePath($request->post('parent')), FileService::DS);
+        $name = trim($request->post('name'), FileService::DS);
 
-        $full_path = $parent . $this->ds . $name;
+        $full_path = $parent . FileService::DS . $name;
 
         try {
             if (File::exists($full_path)) {
@@ -210,14 +219,13 @@ class FileManagerController extends Controller
 
             return response()->json([
                 'success' => $create,
-                'items' => $create ? $this->getBasePathItems() : [],
                 'message' => Translation::getIf(
                     $create,
                     'created',
                     'not_created',
                     ['type' => 'Folder']
                 ),
-                'items' => $create ? $this->getBasePathItems($request->post('open', [])) : []
+                'items' => $create ? $this->service->getBasePathItems($request->post('open', [])) : []
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -235,9 +243,9 @@ class FileManagerController extends Controller
     public function copy(FileCopyRequest $request): JsonResponse
     {
 
-        $path = $this->preparePath($request->post('from'));
+        $path = $this->service->absolutePath($request->post('from'));
 
-        $to = $this->preparePath($request->post('to'));
+        $to = $this->service->absolutePath($request->post('to'));
 
         if (File::isFile($path)) {
             $success = File::copy(
@@ -255,8 +263,8 @@ class FileManagerController extends Controller
 
         return response()->json([
             'success' => $success,
-            'message' => Translation::getIf($success,'copied','not_copied'),
-            'items' => $success ? $this->getBasePathItems($request->post('open', [])) : []
+            'message' => Translation::getIf($success, 'copied', 'not_copied'),
+            'items' => $success ? $this->service->getBasePathItems($request->post('open', [])) : []
         ]);
     }
 
@@ -268,9 +276,9 @@ class FileManagerController extends Controller
     public function cut(FileCopyRequest $request): JsonResponse
     {
 
-        $path = $this->preparePath($request->post('from'));
+        $path = $this->service->absolutePath($request->post('from'));
 
-        $to = $this->preparePath($request->post('to'));
+        $to = $this->service->absolutePath($request->post('to'));
 
         if (File::isFile($path)) {
             $success = File::move($path, rtrim($to, FileService::DS) . FileService::DS . $request->post('name'));
@@ -282,8 +290,8 @@ class FileManagerController extends Controller
 
         return response()->json([
             'success' => $success,
-            'message' => Translation::getIf($success,'operation_success','operation_failed'),
-            'items' => $success ? $this->getBasePathItems($request->post('open', [])) : []
+            'message' => Translation::getIf($success, 'operation_success', 'operation_failed'),
+            'items' => $success ? $this->service->getBasePathItems($request->post('open', [])) : []
         ]);
     }
 
@@ -294,8 +302,8 @@ class FileManagerController extends Controller
      */
     public function rename(Request $request): JsonResponse
     {
-        $path = $this->preparePath($request->post('path'));
-        $name = $this->preparePath($request->post('name'));
+        $path = $this->service->absolutePath($request->post('path'));
+        $name = $this->service->absolutePath($request->post('name'));
 
         try {
             $success = null;
@@ -306,7 +314,7 @@ class FileManagerController extends Controller
                 $success = File::moveDirectory($path, $name);
             }
 
-            $message = Translation::getIf($success,'rename_success','rename_failed');
+            $message = Translation::getIf($success, 'rename_success', 'rename_failed');
 
         } catch (Exception $e) {
             $success = false;
@@ -317,7 +325,7 @@ class FileManagerController extends Controller
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'items' => $success ? $this->getBasePathItems($request->post('open', [])) : []
+            'items' => $success ? $this->service->getBasePathItems($request->post('open', [])) : []
         ]);
     }
 
@@ -328,19 +336,19 @@ class FileManagerController extends Controller
      */
     public function delete(FileDeleteRequest $request): JsonResponse
     {
-        $path = $this->preparePath($request->post('path'));
+        $path = $this->service->absolutePath($request->post('path'));
 
         if (File::isFile($path)) {
             $success = File::delete($path);
 
-            $message = Translation::getIf($success,'delete_success','delete_failed',['type' => 'File']);
+            $message = Translation::getIf($success, 'delete_success', 'delete_failed', ['type' => 'File']);
 
 
         } elseif (File::isDirectory($path)) {
 
             $success = File::deleteDirectory($path);
 
-            $message = Translation::getIf($success,'delete_success','delete_failed',['type' => 'Folder']);
+            $message = Translation::getIf($success, 'delete_success', 'delete_failed', ['type' => 'Folder']);
 
         } else {
 
@@ -361,13 +369,13 @@ class FileManagerController extends Controller
      */
     public function compress(ZipRequest $request): JsonResponse
     {
-        $response = (new FileService($request->post('path')))->zip(
-            $this->preparePath($request->post('path')),
-            $this->preparePath($request->post('name'))
+        $response = $this->service->zip(
+            $this->service->absolutePath($request->post('path')),
+            $this->service->absolutePath($request->post('name'))
         );
 
         if ($response['success']) {
-            $response['items'] = $this->getBasePathItems($request->post('open', []));
+            $response['items'] = $this->service->getBasePathItems($request->post('open', []));
         }
 
         return response()->json($response);
@@ -382,12 +390,12 @@ class FileManagerController extends Controller
     public function unzip(UnzipRequest $request, FileService $service): JsonResponse
     {
         $response = $service->unzip(
-            $this->preparePath($request->post('path')),
-            $this->preparePath($request->post('target'))
+            $this->service->absolutePath($request->post('path')),
+            $this->service->absolutePath($request->post('target'))
         );
 
         if ($response['success']) {
-            $response['items'] = $this->getBasePathItems($request->post('open', []));
+            $response['items'] = $this->service->getBasePathItems($request->post('open', []));
         }
 
         return response()->json($response);
@@ -400,16 +408,12 @@ class FileManagerController extends Controller
      */
     public function upload(FileUploadRequest $request): JsonResponse
     {
-        $service = new FileService(
-            $this->preparePath($request->post('target'))
-        );
-
-        [$success, $message] = $service->upload($request->file('file'));
+        [$success, $message] = $this->service->upload($request->post('target'),$request->file('file'));
 
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'items' => $success ? $this->getBasePathItems($request->post('open', [])) : []
+            'items' => $success ? $this->service->getBasePathItems($request->post('open', [])) : []
         ]);
     }
 }

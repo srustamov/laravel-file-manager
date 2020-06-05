@@ -3,6 +3,8 @@
 namespace Srustamov\FileManager;
 
 use Illuminate\Support\ServiceProvider;
+use Srustamov\FileManager\Contracts\FileServiceInterface;
+use Srustamov\FileManager\Services\FileService;
 
 class FileManagerServiceProvider extends ServiceProvider
 {
@@ -11,27 +13,27 @@ class FileManagerServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/file-manager.php','file-manager');
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'file-manager');
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'fileManager');
-        $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->mergeConfigFrom(__DIR__ . '/../config/file-manager.php', 'file-manager');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'file-manager');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'fileManager');
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
         if ($this->app->runningInConsole()) {
 
             $this->publishes([
-                __DIR__ . '/../config/file-manager.php'=> config_path('file-manager.php'),
+                __DIR__ . '/../config/file-manager.php' => config_path('file-manager.php'),
             ], 'config');
 
             $this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/file-manager'),
-            ],'views');
+                __DIR__ . '/../resources/views' => resource_path('views/vendor/file-manager'),
+            ], 'views');
 
             $this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang/vendor/file-manager'),
-            ],'translations');
+                __DIR__ . '/../resources/lang' => resource_path('lang/vendor/file-manager'),
+            ], 'translations');
 
             $this->publishes([
-                __DIR__.'/../file-manager' => public_path('vendor/file-manager'),
+                __DIR__ . '/../file-manager' => public_path('vendor/file-manager'),
             ], 'public');
         }
     }
@@ -41,5 +43,13 @@ class FileManagerServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind(FileServiceInterface::class, static function () {
+            $config = config('file-manager.paths');
+
+            return (new FileService($config['base']))
+                ->setHidden($config['hidden'] ?? [])
+                ->setOnly($config['only'] ?? [])
+                ->setPathPattern($config['pattern'] ?? '/*');
+        });
     }
 }

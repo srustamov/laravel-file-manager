@@ -8,7 +8,8 @@ return [
             base_path('vendor/'),
             base_path('node_modules/')
         ],
-        'only' => ['*']
+        'only' => ['*'],
+        'pattern' => '/{,.}[!.,!..]*'
     ],
 
     // Laravel File Manager route configuration

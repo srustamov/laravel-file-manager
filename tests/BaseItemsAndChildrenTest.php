@@ -10,7 +10,7 @@ class BaseItemsAndChildrenTest extends TestCase
   public function test_base_items()
   {
      $this->withoutMiddleware();
-     
+
      $response = $this->post('/file-manager/files')
                       ->assertStatus(200)
                       ->decodeResponseJson();
@@ -32,6 +32,7 @@ class BaseItemsAndChildrenTest extends TestCase
      ->decodeResponseJson();
 
      $this->assertEquals(count($response),count(glob($path.'/*')));
+
      $this->assertEquals($response[0]['path'],glob($path.'/*')[0]);
 
   }

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 
 
 
-class FileCopyRequest extends BaseRequest
+class FileCopyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

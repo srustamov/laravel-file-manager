@@ -5,7 +5,7 @@ namespace Srustamov\FileManager\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class FileUploadRequest extends BaseRequest
+class FileUploadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

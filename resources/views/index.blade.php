@@ -8,9 +8,9 @@
 
 	<title>Laravel File Manager</title>
 	<script>
-	  window.FILE_MANAGER_BASE_PATH = '{{realpath(config('file-manager.paths.base'))}}';
-		window.FILE_MANAGER_BASE_URL = '{{config('file-manager.route.prefix')}}';
-		window.FILE_MANAGER_DS = '{{DIRECTORY_SEPARATOR}}';
+	  window.FILE_MANAGER_BASE_PATH = '{{$path}}';
+		window.FILE_MANAGER_BASE_URL = '{{$route_prefix}}';
+		window.FILE_MANAGER_DS = '{{$ds}}';
 		window.CSRF_TOKEN = '{{csrf_token()}}';
 	</script>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">

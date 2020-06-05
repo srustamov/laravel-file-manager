@@ -4,7 +4,7 @@ namespace Srustamov\FileManager\Requests;
 
 use Illuminate\Support\Str;
 
-class FileDeleteRequest extends BaseRequest
+class FileDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
