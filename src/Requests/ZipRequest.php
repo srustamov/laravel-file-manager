@@ -2,10 +2,8 @@
 
 namespace Srustamov\FileManager\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
 
-class ZipRequest extends FormRequest
+class ZipRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,10 +12,7 @@ class ZipRequest extends FormRequest
      */
     public function authorize()
     {
-        $base = realpath(config('file-manager.paths.base'));
-
-        return Str::of(realpath(dirname($this->path)))->startsWith($base) &&
-                Str::of(realpath(dirname($this->name)))->startsWith($base);
+        return $this->validatePath($this->path) && $this->validatePath($this->name);
     }
 
     /**

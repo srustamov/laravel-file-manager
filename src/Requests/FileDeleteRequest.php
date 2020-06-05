@@ -2,9 +2,9 @@
 
 namespace Srustamov\FileManager\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
-class FileDeleteRequest extends FormRequest
+class FileDeleteRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,9 +13,7 @@ class FileDeleteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $base = realpath(config('file-manager.paths.base'));
-
-        return trim($base,DIRECTORY_SEPARATOR) !== trim($this->path,DIRECTORY_SEPARATOR);
+        return Str::of(realpath(dirname($this->path)))->startsWith($this->getClientBasePath());
     }
 
     /**

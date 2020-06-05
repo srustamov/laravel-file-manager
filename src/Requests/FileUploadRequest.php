@@ -5,7 +5,7 @@ namespace Srustamov\FileManager\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class FileUploadRequest extends FormRequest
+class FileUploadRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,9 +14,7 @@ class FileUploadRequest extends FormRequest
      */
     public function authorize()
     {
-        $base = realpath(config('file-manager.paths.base'));
-
-        return Str::of(realpath($this->target))->startsWith($base);
+        return $this->validatePath($this->target);
     }
 
     /**

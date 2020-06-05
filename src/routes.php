@@ -7,11 +7,11 @@ Route::namespace(config('file-manager.route.namespace','Srustamov\\FileManager\\
   ->prefix(config('file-manager.route.prefix',''))
 	->domain(config('file-manager.route.domain',''))
 	->middleware(config('file-manager.route.middleware',[]))
-	->group(function(){
+	->group(static function(){
 	      Route::get('/','FileManagerController@index')
               ->name(config('file-manager.route.as',''));
         Route::post('/terminal/command','TerminalController@run');
-	      Route::prefix('/files')->group(function(){
+	      Route::prefix('/files')->group(static function(){
 	      	  Route::post('/','FileManagerController@showBaseItems');
     			  Route::post('/children','FileManagerController@children');
     			  Route::post('/content','FileManagerController@getFileContent');

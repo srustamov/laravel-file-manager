@@ -2,10 +2,7 @@
 
 namespace Srustamov\FileManager\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
-
-class FileCreateRequest extends FormRequest
+class FileCreateRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,11 +11,7 @@ class FileCreateRequest extends FormRequest
      */
     public function authorize()
     {
-        $base = realpath(config('file-manager.paths.base'));
-
-        $fullpath = realpath(dirname($this->parent.DIRECTORY_SEPARATOR.$this->name));
-
-        return Str::of(realpath($fullpath))->startsWith($base);
+        return $this->validatePath($this->parent.DIRECTORY_SEPARATOR.$this->name);
     }
 
     /**

@@ -2,10 +2,11 @@
 
 namespace Srustamov\FileManager\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
-class FileCopyRequest extends FormRequest
+
+
+class FileCopyRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,10 +15,15 @@ class FileCopyRequest extends FormRequest
      */
     public function authorize()
     {
-        $base = realpath(config('file-mamager.paths.base'));
+        if (!$this->validatePath($this->from)) {
+            return false;
+        }
 
-        return Str::of(realpath(dirname($this->path)))->startsWith($base) &&
-            Str::of(realpath(dirname($this->target)))->startsWith($base);
+        if(!File::exists(realpath(dirname($this->from)))) {
+            return false;
+        }
+
+        return $this->validatePath($this->to);
     }
 
     /**
@@ -28,8 +34,8 @@ class FileCopyRequest extends FormRequest
     public function rules()
     {
         return [
-            'required' => 'path',
-            'required' => 'target',
+            'from' => 'required',
+            'to' => 'required',
         ];
     }
 }

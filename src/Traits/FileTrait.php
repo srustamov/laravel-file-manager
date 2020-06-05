@@ -41,16 +41,19 @@ trait FileTrait
     protected function getFiles(string $path): Collection
     {
         return $this->filterHidden(
-            collect(glob(
-              rtrim($this->preparePath($path), $this->ds) . $this->glob_pattern,
-              GLOB_MARK | GLOB_BRACE
-          ))->map(function ($path) {
-              return $this->prepareFileItem($path);
-          })
-          ->sortBy('name')
-          ->sortBy(static function($item){
-            return isset($item['extension']);
-          }),
+            $this->filterOnly(
+                collect(glob(
+                    rtrim($this->preparePath($path), $this->ds) . $this->glob_pattern,
+                    GLOB_MARK | GLOB_BRACE
+                ))->map(function ($path) {
+                    return $this->prepareFileItem($path);
+                })
+                ->sortBy('name')
+                ->sortBy(static function ($item) {
+                    return isset($item['extension']);
+                }),
+                config('file-manager.paths.only', [])
+            ),
             config('file-manager.paths.hidden', [])
         );
     }
@@ -69,6 +72,26 @@ trait FileTrait
                 return true;
             }
             return false;
+        })->values();
+    }
+
+    /**
+     * @param Collection $files
+     * @param array $only
+     * @return Collection
+     */
+    protected function filterOnly(Collection $files, array $only = ['*']): Collection
+    {
+        if (in_array('*',$only,true)) {
+            return $files;
+        }
+
+        return $files->reject(static function ($item) use (&$only) {
+            if (in_array($item['path'], $only, true)) {
+                Arr::forget($hidden, $item['path']);
+                return false;
+            }
+            return true;
         })->values();
     }
 

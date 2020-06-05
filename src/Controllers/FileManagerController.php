@@ -194,10 +194,10 @@ class FileManagerController extends Controller
         $parent = rtrim($this->preparePath($request->post('parent')), $this->ds);
         $name = trim($request->post('name'), $this->ds);
 
-        $fullpath = $parent . $this->ds . $name;
+        $full_path = $parent . $this->ds . $name;
 
         try {
-            if (File::exists($fullpath)) {
+            if (File::exists($full_path)) {
                 return response()->json([
                     'success' => false,
                     'message' => Translation::get('already_create', ['type' => 'Folder'])
@@ -205,7 +205,7 @@ class FileManagerController extends Controller
             }
 
 
-            $create = File::makeDirectory($fullpath, 0755, true) !== false;
+            $create = File::makeDirectory($full_path, 0755, true) !== false;
 
 
             return response()->json([
@@ -240,7 +240,10 @@ class FileManagerController extends Controller
         $to = $this->preparePath($request->post('to'));
 
         if (File::isFile($path)) {
-            $success = File::copy($path, rtrim($to, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $request->post('name'));
+            $success = File::copy(
+                $path,
+                rtrim($to, FileService::DS) . FileService::DS . $request->post('name')
+            );
             //exec("cp $path $to")
         } elseif (File::isDirectory($path)) {
             $success = File::copyDirectory($path, $to);
@@ -270,7 +273,7 @@ class FileManagerController extends Controller
         $to = $this->preparePath($request->post('to'));
 
         if (File::isFile($path)) {
-            $success = File::move($path, rtrim($to, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $request->post('name'));
+            $success = File::move($path, rtrim($to, FileService::DS) . FileService::DS . $request->post('name'));
         } elseif (File::isDirectory($path)) {
             $success = rename($path, $to);
         } else {
