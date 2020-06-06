@@ -8,14 +8,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Srustamov\FileManager\Requests\{
-    FileCopyRequest,
+use Srustamov\FileManager\Requests\{FileCopyRequest,
     FileCreateRequest,
+    FileCutRequest,
     FileDeleteRequest,
     FileUploadRequest,
     UnzipRequest,
-    ZipRequest,
-};
+    ZipRequest};
 
 use Srustamov\FileManager\Contracts\FileServiceInterface;
 use Srustamov\FileManager\Services\FileService;
@@ -24,7 +23,7 @@ use Srustamov\FileManager\Translation;
 
 class FileManagerController extends Controller
 {
-
+    // @codeCoverageIgnoreStart
     private $service;
 
     /**
@@ -38,6 +37,7 @@ class FileManagerController extends Controller
 
 
     /**
+     * @codeCoverageIgnore
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
@@ -219,6 +219,7 @@ class FileManagerController extends Controller
 
             return response()->json([
                 'success' => $create,
+                'path' => $full_path,
                 'message' => Translation::getIf(
                     $create,
                     'created',
@@ -248,10 +249,8 @@ class FileManagerController extends Controller
         $to = $this->service->absolutePath($request->post('to'));
 
         if (File::isFile($path)) {
-            $success = File::copy(
-                $path,
-                rtrim($to, FileService::DS) . FileService::DS . $request->post('name')
-            );
+            $target = rtrim($to, FileService::DS) . FileService::DS . $request->post('name');
+            $success = File::copy($path, $target);
             //exec("cp $path $to")
         } elseif (File::isDirectory($path)) {
             $success = File::copyDirectory($path, $to);
@@ -263,6 +262,7 @@ class FileManagerController extends Controller
 
         return response()->json([
             'success' => $success,
+            'target' => $target ?? $to,
             'message' => Translation::getIf($success, 'copied', 'not_copied'),
             'items' => $success ? $this->service->getBasePathItems($request->post('open', [])) : []
         ]);
@@ -270,18 +270,20 @@ class FileManagerController extends Controller
 
 
     /**
-     * @param FileCopyRequest $request
+     * @param FileCutRequest $request
      * @return JsonResponse
      */
-    public function cut(FileCopyRequest $request): JsonResponse
+    public function cut(FileCutRequest $request): JsonResponse
     {
-
         $path = $this->service->absolutePath($request->post('from'));
 
         $to = $this->service->absolutePath($request->post('to'));
 
+
         if (File::isFile($path)) {
-            $success = File::move($path, rtrim($to, FileService::DS) . FileService::DS . $request->post('name'));
+            $target = rtrim($to, FileService::DS) . FileService::DS . $request->post('name');
+
+            $success = File::move($path, $target);
         } elseif (File::isDirectory($path)) {
             $success = rename($path, $to);
         } else {
@@ -290,6 +292,7 @@ class FileManagerController extends Controller
 
         return response()->json([
             'success' => $success,
+            'target' => $target ?? $to,
             'message' => Translation::getIf($success, 'operation_success', 'operation_failed'),
             'items' => $success ? $this->service->getBasePathItems($request->post('open', [])) : []
         ]);
@@ -415,4 +418,6 @@ class FileManagerController extends Controller
             'items' => $success ? $this->service->getBasePathItems($request->post('open', [])) : []
         ]);
     }
+
+    // @codeCoverageIgnoreEnd
 }

@@ -48,7 +48,6 @@ class FileManagerServiceProvider extends ServiceProvider
 
             return (new FileService($config['base']))
                 ->setHidden($config['hidden'] ?? [])
-                ->setOnly($config['only'] ?? [])
                 ->setPathPattern($config['pattern'] ?? '/*');
         });
     }

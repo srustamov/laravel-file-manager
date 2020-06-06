@@ -15,6 +15,7 @@ class TerminalController extends Controller
 {
 
     /**
+     * @codeCoverageIgnore
      * @param Request $request
      * @return string
      */

@@ -24,8 +24,7 @@ class TestCase extends Orchestra
       parent::setUp();
 
       config()->set('file-manager.paths.base',__DIR__.'/__test_path__');
-      config()->set('file-manager.paths.hidden',[]);
-      config()->set('file-manager.paths.only',['*']);
+      config()->set('file-manager.paths.hidden',[__DIR__.'/__test_path__/test-hidden/']);
 
       $this->config = config('file-manager');
 

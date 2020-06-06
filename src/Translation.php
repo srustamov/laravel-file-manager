@@ -10,6 +10,7 @@ class Translation
      * @param $key
      * @param array $data
      * @return array|string|null
+     * @codeCoverageIgnore
      */
     public static function get($key, array $data = [])
     {
@@ -24,6 +25,7 @@ class Translation
      * @param array $data
      * @param array|null $else_data
      * @return array|string|null
+     * /**@codeCoverageIgnore
      */
     public static function getIf($if, $if_key, $else_key = null, array $data = [], array $else_data = null)
     {

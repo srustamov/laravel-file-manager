@@ -12,6 +12,7 @@ use Illuminate\Http\UploadedFile;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Srustamov\FileManager\Contracts\FileServiceInterface;
+use Srustamov\FileManager\Exceptions\FileManagerException;
 use Srustamov\FileManager\Translation;
 use ZipArchive;
 
@@ -50,7 +51,9 @@ class FileService implements FileServiceInterface
     public function __construct(string $base_path)
     {
         if (!File::exists($base_path)) {
+            // @codeCoverageIgnoreStart
             throw new FileManagerException('File manager base path not found');
+            // @codeCoverageIgnoreEnd
         }
         $this->base_path = realpath($base_path);
     }
@@ -75,25 +78,6 @@ class FileService implements FileServiceInterface
     }
 
     /**
-     * @param string $path
-     * @return $this
-     */
-    public function setBasePath(string $path)
-    {
-        $this->base_path = $path;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBasePath(): string
-    {
-        return $this->base_path;
-    }
-
-    /**
      * @param array $paths
      * @return $this
      */
@@ -111,25 +95,6 @@ class FileService implements FileServiceInterface
     public function getHidden(): array
     {
         return $this->hidden;
-    }
-
-    /**
-     * @param array $paths
-     * @return $this
-     */
-    public function setOnly(array $paths)
-    {
-        $this->only = $paths;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOnly(): array
-    {
-        return $this->only;
     }
 
 
@@ -163,19 +128,16 @@ class FileService implements FileServiceInterface
     public function getFiles(string $path): Collection
     {
         return $this->filterHidden(
-          $this->filterOnly(
             collect(glob(
                 rtrim($this->absolutePath($path), self::DS) . $this->getPathPattern(),
                 GLOB_MARK | GLOB_BRACE
             ))->map(function ($path) {
                 return $this->prepareFileItem($path);
             })
-            ->sortBy('name')
-            ->sortBy(static function ($item) {
-                return isset($item['extension']);
-            }),
-            $this->getOnly()
-          ),
+                ->sortBy('name')
+                ->sortBy(static function ($item) {
+                    return isset($item['extension']);
+                }),
           $this->getHidden()
         );
     }
@@ -194,26 +156,6 @@ class FileService implements FileServiceInterface
                 return true;
             }
             return false;
-        })->values();
-    }
-
-    /**
-     * @param Collection $files
-     * @param array $only
-     * @return Collection
-     */
-    public function filterOnly(Collection $files, array $only = ['*']): Collection
-    {
-        if (in_array('*', $only, true)) {
-            return $files;
-        }
-
-        return $files->reject(static function ($item) use (&$only) {
-            if (in_array($item['path'], $only, true)) {
-                Arr::forget($only, $item['path']);
-                return false;
-            }
-            return true;
         })->values();
     }
 
@@ -265,6 +207,7 @@ class FileService implements FileServiceInterface
 
 
     /**
+     * @codeCoverageIgnore
      * @param string $path
      * @param UploadedFile $file
      * @return array
@@ -286,6 +229,7 @@ class FileService implements FileServiceInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param $source
      * @param $destination
      * @return array|null
@@ -347,6 +291,7 @@ class FileService implements FileServiceInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param string $path
      * @param string $target
      * @return array

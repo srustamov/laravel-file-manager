@@ -7,4 +7,12 @@ php:
 before_script:
   - sh -c "composer install"
 
-script: ./vendor/bin/phpunit
+script:
+    - vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
+
+branches:
+    only:
+        - master
+
+notifications:
+    email: false

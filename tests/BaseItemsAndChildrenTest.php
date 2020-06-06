@@ -11,9 +11,11 @@ class BaseItemsAndChildrenTest extends TestCase
   {
      $this->withoutMiddleware();
 
-     $response = $this->post('/file-manager/files')
-                      ->assertStatus(200)
-                      ->decodeResponseJson();
+     $response = $this->post('/file-manager/files',[
+             'open' => [__DIR__.'/__test_path__/test-folder-1/']
+          ])
+          ->assertStatus(200)
+          ->decodeResponseJson();
 
      $this->assertEquals($response[0]['path'],$this->config['paths']['base']);
   }

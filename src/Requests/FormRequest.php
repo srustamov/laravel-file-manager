@@ -20,6 +20,7 @@ abstract class FormRequest extends BaseFormRequest
 
     /**
      * @return bool|string
+     * @codeCoverageIgnore
      */
     protected function getClientBasePath()
     {
@@ -33,8 +34,9 @@ abstract class FormRequest extends BaseFormRequest
     /**
      * @param $path
      * @return bool
+     * @codeCoverageIgnore
      */
-    protected function validatePath($path)
+    protected function validatePath($path): bool
     {
         $realpath = realpath($path) ?: realpath(dirname($path));
 

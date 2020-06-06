@@ -30,17 +30,6 @@ interface FileServiceInterface
     public function getPathPattern(): string;
 
     /**
-     * @param string $path
-     * @return $this
-     */
-    public function setBasePath(string $path);
-
-    /**
-     * @return string
-     */
-    public function getBasePath(): string;
-
-    /**
      * @param array $paths
      * @return $this
      */
@@ -51,17 +40,6 @@ interface FileServiceInterface
      * @return array
      */
     public function getHidden(): array;
-
-    /**
-     * @param array $paths
-     * @return $this
-     */
-    public function setOnly(array $paths);
-
-    /**
-     * @return array
-     */
-    public function getOnly(): array;
 
 
     /**
@@ -84,13 +62,6 @@ interface FileServiceInterface
      * @return Collection
      */
     public function filterHidden(Collection $files, array $hidden = []): Collection;
-
-    /**
-     * @param Collection $files
-     * @param array $only
-     * @return Collection
-     */
-    public function filterOnly(Collection $files, array $only = ['*']): Collection;
 
     /**
      * @param string $path
