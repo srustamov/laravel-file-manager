@@ -5,6 +5,8 @@
 
 [![Latest Stable Version](https://poser.pugx.org/srustamov/laravel-file-manager/v/stable)](https://packagist.org/packages/srustamov/laravel-file-manager)
 [![Latest Unstable Version](https://poser.pugx.org/srustamov/laravel-file-manager/v/unstable)](https://packagist.org/packages/srustamov/laravel-file-manager)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/588a51182465fa590e49/test_coverage)](https://codeclimate.com/github/srustamov/laravel-file-manager/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/588a51182465fa590e49/maintainability)](https://codeclimate.com/github/srustamov/laravel-file-manager/maintainability)
 [![GitHub license](https://img.shields.io/github/license/srustamov/laravel-file-manager.svg)](https://github.com/srustamov/laravel-file-manager/blob/master/LICENSE.md)
 
 ## Preview
