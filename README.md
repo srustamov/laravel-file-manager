@@ -40,6 +40,7 @@ php artisan vendor:publish --provider="Srustamov\FileManager\FileManagerServiceP
 
 ``` bash
 composer test
+composer test-coverage
 ```
 
 

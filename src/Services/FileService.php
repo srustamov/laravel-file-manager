@@ -22,18 +22,12 @@ class FileService implements FileServiceInterface
     /**
      * @var string
      */
-    public $path_pattern;
+    public $path_pattern = '/*';
 
     /**
      * @var string
      */
     public $base_path;
-
-
-    /**
-     * @var array
-     */
-    public $only = [];
 
     /**
      * @var array
@@ -138,7 +132,7 @@ class FileService implements FileServiceInterface
                 ->sortBy(static function ($item) {
                     return isset($item['extension']);
                 }),
-          $this->getHidden()
+            $this->getHidden()
         );
     }
 
@@ -157,15 +151,6 @@ class FileService implements FileServiceInterface
             }
             return false;
         })->values();
-    }
-
-    /**
-     * @param string $path
-     * @return array|false
-     */
-    public function getChildren(string $path): array
-    {
-        return $this->getFiles($path)->toArray();
     }
 
 
@@ -239,9 +224,7 @@ class FileService implements FileServiceInterface
         ini_set('max_execution_time', 600);
         ini_set('memory_limit', '1024M');
 
-        $exists = File::exists($source);
-
-        if (!$exists || !extension_loaded('zip')) {
+        if (!($exists = File::exists($source)) || !extension_loaded('zip')) {
             return [
                 'success' => false,
                 'message' => Translation::getIf($exists, 'file_not_found', 'zip_extension_not_loaded')
@@ -257,13 +240,13 @@ class FileService implements FileServiceInterface
             ];
         }
 
-        $source = str_replace('\\', self::DS, realpath($source));
-
         if (File::isDirectory($source)) {
-            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($source),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
 
             foreach ($files as $file) {
-                $file = str_replace('\\', self::DS, $file);
 
                 if (in_array(substr($file, strrpos($file, self::DS) + 1), array('.', '..'))) {
                     continue;
@@ -274,11 +257,11 @@ class FileService implements FileServiceInterface
                 if (File::isDirectory($file)) {
                     $zip->addEmptyDir(str_replace($source . self::DS, '', $file . self::DS));
                 } else if (File::isFile($file)) {
-                    $zip->addFromString(str_replace($source . self::DS, '', $file), file_get_contents($file));
+                    $zip->addFromString(str_replace($source . self::DS, '', $file), File::get($file));
                 }
             }
         } else if (File::isFile($source)) {
-            $zip->addFromString(basename($source), file_get_contents($source));
+            $zip->addFromString(basename($source), File::get($source));
         }
 
         $success = $zip->close();
@@ -287,7 +270,6 @@ class FileService implements FileServiceInterface
             'success' => $success,
             'message' => Translation::getIf($success, 'compressed_success', 'compressed_failed')
         ];
-
     }
 
     /**
@@ -334,6 +316,4 @@ class FileService implements FileServiceInterface
 
         return str_replace([self::DS . self::DS, '..'], [self::DS, ''], $path);
     }
-
-
 }

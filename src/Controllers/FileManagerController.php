@@ -65,7 +65,7 @@ class FileManagerController extends Controller
     public function children(Request $request): JsonResponse
     {
         return response()->json(
-            $this->service->getChildren($request->post('path'))
+            $this->service->getFiles($request->post('path'))->toArray()
         );
     }
 

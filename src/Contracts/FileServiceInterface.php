@@ -63,12 +63,6 @@ interface FileServiceInterface
      */
     public function filterHidden(Collection $files, array $hidden = []): Collection;
 
-    /**
-     * @param string $path
-     * @return array|false
-     */
-    public function getChildren(string $path): array;
-
 
     /**
      * @param $path
