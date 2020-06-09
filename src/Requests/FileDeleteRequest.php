@@ -28,5 +28,4 @@ class FileDeleteRequest extends FormRequest
             'path' => 'required|string'
         ];
     }
-
 }

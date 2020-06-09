@@ -11,7 +11,7 @@ class FileCreateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->validatePath($this->parent.DIRECTORY_SEPARATOR.$this->name);
+        return $this->validatePath($this->parent . DIRECTORY_SEPARATOR . $this->name);
     }
 
     /**
@@ -26,5 +26,4 @@ class FileCreateRequest extends FormRequest
             'parent' => 'required|string'
         ];
     }
-
 }

@@ -3,11 +3,8 @@
 
 namespace Srustamov\FileManager\Contracts;
 
-
 use Illuminate\Support\Collection;
 use Illuminate\Http\UploadedFile;
-
-
 
 interface FileServiceInterface
 {
@@ -105,6 +102,4 @@ interface FileServiceInterface
      * @return string
      */
     public function absolutePath($path): string;
-
-
 }

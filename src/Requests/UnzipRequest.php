@@ -2,7 +2,6 @@
 
 namespace Srustamov\FileManager\Requests;
 
-
 class UnzipRequest extends FormRequest
 {
     /**
@@ -29,5 +28,4 @@ class UnzipRequest extends FormRequest
             'target' => 'required|string',
         ];
     }
-
 }

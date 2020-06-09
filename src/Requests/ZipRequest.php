@@ -2,7 +2,6 @@
 
 namespace Srustamov\FileManager\Requests;
 
-
 class ZipRequest extends FormRequest
 {
 

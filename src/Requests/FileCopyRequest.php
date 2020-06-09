@@ -4,8 +4,6 @@ namespace Srustamov\FileManager\Requests;
 
 use Illuminate\Support\Facades\File;
 
-
-
 class FileCopyRequest extends FormRequest
 {
     /**
@@ -19,7 +17,7 @@ class FileCopyRequest extends FormRequest
             return false;
         }
 
-        if(!File::exists(realpath(dirname($this->from)))) {
+        if (!File::exists(realpath(dirname($this->from)))) {
             return false;
         }
 

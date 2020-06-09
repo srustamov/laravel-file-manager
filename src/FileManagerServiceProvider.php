@@ -19,7 +19,6 @@ class FileManagerServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
         if ($this->app->runningInConsole()) {
-
             $this->publishes([
                 __DIR__ . '/../config/file-manager.php' => config_path('file-manager.php'),
             ], 'config');

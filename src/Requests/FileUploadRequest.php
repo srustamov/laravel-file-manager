@@ -2,7 +2,6 @@
 
 namespace Srustamov\FileManager\Requests;
 
-
 class FileUploadRequest extends FormRequest
 {
 
@@ -27,5 +26,4 @@ class FileUploadRequest extends FormRequest
             'target' => 'required'
         ];
     }
-
 }

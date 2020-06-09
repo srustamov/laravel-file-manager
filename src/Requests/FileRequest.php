@@ -27,5 +27,4 @@ class FileRequest extends FormRequest
             'path' => 'required|string'
         ];
     }
-
 }

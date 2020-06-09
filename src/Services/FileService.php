@@ -205,7 +205,7 @@ class FileService implements FileServiceInterface
 
         if ($file->isValid()) {
             $success = $file->move($path, $file->getClientOriginalName());
-            $message = Translation::getIf($success, 'upload_success', 'upload_failed');
+            $message = Translation::when($success, 'upload_success')->unless('upload_failed');
         } else {
             $message = Translation::get('file_error_loading');
         }
@@ -227,7 +227,7 @@ class FileService implements FileServiceInterface
         if (!($exists = File::exists($source)) || !extension_loaded('zip')) {
             return [
                 'success' => false,
-                'message' => Translation::getIf($exists, 'file_not_found', 'zip_extension_not_loaded')
+                'message' => Translation::when($exists, 'file_not_found')->unless('zip_extension_not_loaded')
             ];
         }
 
@@ -247,7 +247,6 @@ class FileService implements FileServiceInterface
             );
 
             foreach ($files as $file) {
-
                 if (in_array(substr($file, strrpos($file, self::DS) + 1), array('.', '..'))) {
                     continue;
                 }
@@ -256,11 +255,11 @@ class FileService implements FileServiceInterface
 
                 if (File::isDirectory($file)) {
                     $zip->addEmptyDir(str_replace($source . self::DS, '', $file . self::DS));
-                } else if (File::isFile($file)) {
+                } elseif (File::isFile($file)) {
                     $zip->addFromString(str_replace($source . self::DS, '', $file), File::get($file));
                 }
             }
-        } else if (File::isFile($source)) {
+        } elseif (File::isFile($source)) {
             $zip->addFromString(basename($source), File::get($source));
         }
 
@@ -268,7 +267,7 @@ class FileService implements FileServiceInterface
 
         return [
             'success' => $success,
-            'message' => Translation::getIf($success, 'compressed_success', 'compressed_failed')
+            'message' => Translation::when($success, 'compressed_success')->unless('compressed_failed')
         ];
     }
 
@@ -286,14 +285,13 @@ class FileService implements FileServiceInterface
             $success = false;
 
             if ($unzip->open($path) === true) {
-
                 $unzip->extractTo($target);
 
                 $success = $unzip->close();
             }
             return [
                 'success' => $success,
-                'message' => Translation::getIf($success, 'unzip_success', 'unzip_failed'),
+                'message' => Translation::when($success, 'unzip_success')->unless('unzip_failed'),
             ];
         } catch (Exception $e) {
             return [

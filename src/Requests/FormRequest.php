@@ -24,7 +24,7 @@ abstract class FormRequest extends BaseFormRequest
      */
     protected function getClientBasePath()
     {
-        if (!$path = realpath(config('file-manager.paths.base',null))) {
+        if (!$path = realpath(config('file-manager.paths.base', null))) {
             throw new FileManagerException('File manager base path not found');
         }
         return $path;

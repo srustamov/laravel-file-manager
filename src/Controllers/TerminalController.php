@@ -2,14 +2,12 @@
 
 namespace Srustamov\FileManager\Controllers;
 
-use Exception;
+use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Process\Process;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
-
+use Exception;
 
 class TerminalController extends Controller
 {
@@ -21,20 +19,18 @@ class TerminalController extends Controller
      */
     public function run(Request $request)
     {
-        $command = $request->post('command','');
+        $command = $request->post('command', '');
 
         try {
-
-            if($artisan = $this->ifArtisanCommandGetCommand($command)) {
+            if ($artisan = $this->ifArtisanCommandGetCommand($command)) {
                 Artisan::call($artisan);
 
                 return Artisan::output();
             }
 
-            $process = new Process(explode(' ',$command));
+            $process = new Process(explode(' ', $command));
             $process->run();
             return $process->getOutput();
-
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -48,13 +44,12 @@ class TerminalController extends Controller
      */
     protected function ifArtisanCommandGetCommand($command)
     {
-        if(preg_match('/^php\s+artisan.+?(.*)/',$command,$find)) {
-          if(isset($find[1])) {
-            $command = $find[1];
-          }
+        if (preg_match('/^php\s+artisan.+?(.*)/', $command, $find)) {
+            if (isset($find[1])) {
+                $command = $find[1];
+            }
         }
 
         return Arr::has(Artisan::all(), $command) ? $command : false;
     }
-
 }
