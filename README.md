@@ -32,7 +32,20 @@ php artisan vendor:publish --provider="Srustamov\FileManager\FileManagerServiceP
 php artisan vendor:publish --provider="Srustamov\FileManager\FileManagerServiceProvider" --tag="public" --force
 ```
 
+## Features
 
+* Frontend on Vue.js
+* Creating files
+* Creating folders
+* Edit files (prism editor)
+* Copying 
+* Cutting
+* Renaming
+* Uploading files
+* Viewing images
+* Terminal
+* Dark/Light mode
+* Zip / Unzip
 
 
 
