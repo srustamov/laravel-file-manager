@@ -81,9 +81,9 @@ class FileManagerController extends Controller
             try {
                 $type = File::mimeType($path);
 
-                $text = Str::of($type)->startsWith('text') || $type === 'inode/x-empty';
+                $text = Str::startsWith($type,'text') || $type === 'inode/x-empty';
 
-                $image = Str::of($type)->startsWith('image');
+                $image = Str::startsWith($type,'image');
 
                 if ($text) {
                     $content = File::get($path);
