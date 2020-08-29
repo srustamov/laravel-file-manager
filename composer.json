@@ -13,7 +13,7 @@
     "require": {
         "php": "^7.2",
         "ext-zip": "*",
-        "symfony/process": "^5.0",
+        "symfony/process": "^4.4|5.0",
         "illuminate/support": "^6.0|^7.0",
         "illuminate/console": "^6.0|^7.0",
         "illuminate/config": "^6.0|^7.0",
