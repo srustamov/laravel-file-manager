@@ -81,13 +81,15 @@ class FileManagerController extends Controller
             try {
                 $type = File::mimeType($path);
 
-                $text = Str::startsWith($type,'text') || $type === 'inode/x-empty';
-
-                $image = Str::startsWith($type,'image');
+                $text =  (
+                    Str::startsWith($type, 'text') || 
+                    $type == 'inode/x-empty' ||
+                    in_array($type, ['application/javascript','application/json', 'application/xml'])
+                );
 
                 if ($text) {
                     $content = File::get($path);
-                } elseif ($image) {
+                } elseif ($image = Str::startsWith($type, 'image')) {
                     $content = 'data:image/' . $type . ';base64,' . base64_encode(File::get($path));
                 } else {
                     return response()->json([
