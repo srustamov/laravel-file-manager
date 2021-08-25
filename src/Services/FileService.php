@@ -307,7 +307,7 @@ class FileService implements FileServiceInterface
      */
     public function absolutePath($path): string
     {
-        $path = self::DS
+        $path = (stripos(PHP_OS, "WIN") === 0 ? "" : self::DS)
             . trim($this->base_path, self::DS)
             . self::DS
             . Str::replaceFirst($this->base_path, '', $path);

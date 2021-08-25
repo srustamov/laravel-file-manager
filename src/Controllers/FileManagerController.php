@@ -78,34 +78,32 @@ class FileManagerController extends Controller
         $path = $this->service->absolutePath($request->post('path'));
 
         if (File::isFile($path)) {
-            try {
+
+            try
+            {
                 $type = File::mimeType($path);
 
                 $text =  (
-                    Str::startsWith($type, 'text') || 
-                    $type == 'inode/x-empty' ||
-                    in_array($type, ['application/javascript','application/json', 'application/xml'])
+                    Str::startsWith($type, 'text') ||
+                    in_array($type, ['application/javascript','application/json', 'application/xml','inode/x-empty','application/x-empty'])
                 );
 
-                if ($text) {
-                    $content = File::get($path);
-                } elseif ($image = Str::startsWith($type, 'image')) {
+                if ($image = Str::startsWith($type, 'image')) {
                     $content = 'data:image/' . $type . ';base64,' . base64_encode(File::get($path));
                 } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => Translation::get('file_not_read'),
-                        'type' => $type,
-                    ]);
+                    $content = File::get($path);
                 }
 
                 return response()->json([
                     'success' => true,
                     'content' => $content,
                     'is_text' => $text,
-                    'is_image' => $image,
+                    'is_image' => $image ?? false,
                 ]);
-            } catch (Exception $e) {
+
+            }
+            catch (Exception $e)
+            {
                 return response()->json([
                     'success' => false,
                     'message' => $e->getMessage()
@@ -241,10 +239,10 @@ class FileManagerController extends Controller
         if (File::isFile($path)) {
             $target = rtrim($to, FileService::DS) . FileService::DS . $request->post('name');
             $success = File::copy($path, $target);
-        //exec("cp $path $to")
+            //exec("cp $path $to")
         } elseif (File::isDirectory($path)) {
             $success = File::copyDirectory($path, $to);
-        //exec("cp-r $path $to")
+            //exec("cp-r $path $to")
         } else {
             $success = false;
         }
